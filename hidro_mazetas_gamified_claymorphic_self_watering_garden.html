@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidro Mazetas — Jardín Mágico & Autorriego Claymorphic</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Fredoka (Playful titles) & Nunito (Friendly readable text) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Canvas Confetti for Gamified Achievements -->
+    <script src="https://cdn.jsdelivr.com/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        claybg: '#F3F6F1',
+                        claymint: '#D8F3DC',
+                        claymintdark: '#B7E4C7',
+                        claypeach: '#FFD8BE',
+                        claypeachdark: '#FEC89A',
+                        claysky: '#D8E2DC',
+                        clayskydark: '#FFE5EC',
+                        claybutter: '#FFEA85',
+                        clayterracotta: '#E07A5F',
+                        clayblue: '#A2D2FF',
+                        claybluedark: '#7400B8',
+                        claytext: '#2B2D42',
+                        claymuted: '#6C757D'
+                    },
+                    fontFamily: {
+                        display: ['Fredoka', 'cursive', 'sans-serif'],
+                        body: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F4F7F2;
+            color: #2B2D42;
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E8EFE6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B7E4C7;
+            border-radius: 20px;
+            border: 2px solid #E8EFE6;
+        }
+
+        /* 3D CLAYMORPHISM BASE CARD */
+        .clay-card {
+            background: #FFFFFF;
+            border-radius: 32px;
+            box-shadow: 
+                12px 16px 28px -4px rgba(160, 185, 175, 0.4),
+                -8px -8px 20px 0px rgba(255, 255, 255, 0.95),
+                inset -6px -6px 12px 0px rgba(0, 0, 0, 0.04),
+                inset 6px 6px 12px 0px rgba(255, 255, 255, 0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+
+        /* CLAY CARD COLORED VARIANTS */
+        .clay-card-mint {
+            background: #E2F5E5;
+            box-shadow: 
+                10px 14px 24px -2px rgba(140, 190, 155, 0.45),
+                -6px -6px 16px 0px rgba(255, 255, 255, 0.9),
+                inset -6px -6px 12px 0px rgba(95, 160, 115, 0.15),
+                inset 6px 6px 12px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        .clay-card-peach {
+            background: #FFE8D6;
+            box-shadow: 
+                10px 14px 24px -2px rgba(220, 160, 130, 0.4),
+                -6px -6px 16px 0px rgba(255, 255, 255, 0.9),
+                inset -6px -6px 12px 0px rgba(200, 120, 80, 0.15),
+                inset 6px 6px 12px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        .clay-card-blue {
+            background: #E0F2FE;
+            box-shadow: 
+                10px 14px 24px -2px rgba(130, 180, 220, 0.45),
+                -6px -6px 16px 0px rgba(255, 255, 255, 0.9),
+                inset -6px -6px 12px 0px rgba(80, 140, 200, 0.15),
+                inset 6px 6px 12px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        .clay-btn {
+            border-radius: 9999px;
+            font-family: 'Fredoka', cursive;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .clay-btn-primary {
+            background: #52B788;
+            color: #FFFFFF;
+            box-shadow: 
+                6px 10px 20px -2px rgba(45, 106, 79, 0.4),
+                -4px -4px 10px 0px rgba(255, 255, 255, 0.6),
+                inset -4px -4px 8px 0px rgba(0, 0, 0, 0.2),
+                inset 4px 4px 8px 0px rgba(255, 255, 255, 0.5);
+        }
+        .clay-btn-primary:hover {
+            transform: translateY(-4px) scale(1.03);
+            background: #40916C;
+        }
+        .clay-btn-primary:active {
+            transform: translateY(2px) scale(0.97);
+            box-shadow: 
+                inset 4px 6px 10px rgba(0, 0, 0, 0.25),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.3);
+        }
+
+        .clay-btn-secondary {
+            background: #FFFFFF;
+            color: #2B2D42;
+            box-shadow: 
+                6px 10px 18px -2px rgba(160, 185, 175, 0.35),
+                -4px -4px 10px 0px rgba(255, 255, 255, 0.95),
+                inset -4px -4px 8px 0px rgba(0, 0, 0, 0.05),
+                inset 4px 4px 8px 0px rgba(255, 255, 255, 0.9);
+        }
+        .clay-btn-secondary:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: #F8FAF7;
+        }
+        .clay-btn-secondary:active {
+            transform: translateY(2px) scale(0.97);
+        }
+
+        .clay-badge {
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+            font-family: 'Fredoka', cursive;
+            font-size: 0.8rem;
+            box-shadow: 
+                3px 5px 10px rgba(150, 175, 165, 0.3),
+                inset -2px -2px 5px rgba(0, 0, 0, 0.06),
+                inset 2px 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .clay-input-inset {
+            background: #EBF2EA;
+            border-radius: 20px;
+            box-shadow: 
+                inset 4px 4px 8px rgba(0, 0, 0, 0.08),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Smooth Floating Animation for Clay Assets */
+        @keyframes clayFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1.5deg); }
+        }
+        .animate-clay-float {
+            animation: clayFloat 5s ease-in-out infinite;
+        }
+
+        @keyframes waterPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+        .animate-water-pulse {
+            animation: waterPulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen selection:bg-claymintdark selection:text-claytext">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-4 z-50 max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="clay-card px-6 py-4 flex items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-full bg-claymint flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <svg class="w-7 h-7 text-emerald-700" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C11.5 2 11 2.5 11 3V4.1C7.6 4.6 5 7.5 5 11V15C5 17.2 6.8 19 9 19H10V21C10 21.6 10.4 22 11 22H13C13.6 22 14 21.6 14 21V19H15C17.2 19 19 17.2 19 15V11C19 7.5 16.4 4.6 13 4.1V3C13 2.5 12.5 2 12 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display text-2xl font-bold tracking-wide text-claytext leading-none">Hidro Mazetas</span>
+                    <span class="text-[11px] font-extrabold text-emerald-600 tracking-wider uppercase mt-1">SISTEMA AUTORRIEGO 3D</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-2 font-display text-sm font-semibold">
+                <a href="#simulador" class="px-4 py-2 rounded-full hover:bg-claymint/60 transition-colors">Simulador</a>
+                <a href="#juego" class="px-4 py-2 rounded-full hover:bg-claypeach/60 transition-colors">Aprende & Juega</a>
+                <a href="#coleccion" class="px-4 py-2 rounded-full hover:bg-clayblue/60 transition-colors">Colección</a>
+                <a href="#faq" class="px-4 py-2 rounded-full hover:bg-claybutter/60 transition-colors">Preguntas</a>
+            </nav>
+
+            <!-- Gamified XP & Cart Actions -->
+            <div class="flex items-center gap-3">
+                
+                <!-- Plant Care Level Badge -->
+                <div class="hidden sm:flex items-center gap-2 bg-claybutter px-3.5 py-1.5 rounded-full text-xs font-display font-bold shadow-sm">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-600 animate-spin" style="animation-duration: 8s;"></i>
+                    <span id="headerXpText">Nivel 1: Jardinero Principiante</span>
+                </div>
+
+                <!-- Cart Button -->
+                <button onclick="toggleCartModal()" class="clay-btn clay-btn-secondary px-4 py-2.5 text-sm relative" aria-label="Ver Carrito">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-700"></i>
+                    <span class="hidden sm:inline">Carrito</span>
+                    <span id="cartBadgeCount" class="bg-clayterracotta text-white font-display text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold ml-1">0</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- Left Hero Content -->
+            <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+                
+                <div class="inline-flex items-center gap-2 clay-badge bg-claymint text-emerald-800">
+                    <i data-lucide="droplet" class="w-4 h-4 text-emerald-600 fill-emerald-400"></i>
+                    <span>Boquilla Lateral de Autorriego Patentada</span>
+                </div>
+
+                <h1 class="font-display text-4xl sm:text-5xl xl:text-6xl font-bold text-claytext leading-[1.15]">
+                    ¡Echa agua al lado, <br class="hidden sm:inline">
+                    <span class="text-emerald-600 underline decoration-claybutter decoration-wavy">tu planta sonríe!</span>
+                </h1>
+
+                <p class="text-base sm:text-lg text-claymuted font-semibold max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                    Olvídate de encharcar la tierra por arriba. Hidro Mazetas tiene un compartimento de arcilla suave al costado para alimentar directamente a las raíces.
+                </p>
+
+                <!-- Hero Action Buttons -->
+                <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                    <a href="#simulador" class="clay-btn clay-btn-primary px-8 py-4 text-base w-full sm:w-auto shadow-lg">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        <span>Probar Simulador 3D</span>
+                    </a>
+                    <a href="#coleccion" class="clay-btn clay-btn-secondary px-8 py-4 text-base w-full sm:w-auto">
+                        <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-700"></i>
+                        <span>Ver Macetas</span>
+                    </a>
+                </div>
+
+                <!-- Quick Stats Badges -->
+                <div class="pt-6 grid grid-cols-3 gap-4 border-t border-slate-200/60">
+                    <div class="clay-card p-3 text-center">
+                        <span class="font-display text-2xl font-bold text-emerald-600 block">30 Días</span>
+                        <span class="text-xs font-bold text-claymuted">Agua Autónoma</span>
+                    </div>
+                    <div class="clay-card p-3 text-center">
+                        <span class="font-display text-2xl font-bold text-sky-600 block">100%</span>
+                        <span class="text-xs font-bold text-claymuted">Sin Derrames</span>
+                    </div>
+                    <div class="clay-card p-3 text-center">
+                        <span class="font-display text-2xl font-bold text-amber-600 block">0%</span>
+                        <span class="text-xs font-bold text-claymuted">Raíz Podrida</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Visual 3D Clay Interactive Preview -->
+            <div class="lg:col-span-6 flex justify-center items-center">
+                <div class="clay-card clay-card-mint p-8 w-full max-w-lg relative animate-clay-float">
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="clay-badge bg-white text-emerald-800 font-bold">Edición Claymorphic 3D</span>
+                        <span class="clay-badge bg-claybutter text-amber-900 font-bold">Reserva Activa</span>
+                    </div>
+
+                    <!-- SVG 3D Soft Clay Planter Visual with Animated Side Water Spout -->
+                    <div class="relative py-4 flex justify-center items-center">
+                        <svg class="w-full h-80 max-w-xs drop-shadow-xl" viewBox="0 0 300 320" fill="none">
+                            
+                            <!-- Soft Clay Drop Shadow -->
+                            <ellipse cx="150" cy="295" rx="100" ry="16" fill="#A4C3B2" fill-opacity="0.4" filter="blur(4px)"/>
+
+                            <!-- PLANT FOLIAGE (3D SOFT CLAY LEAVES) -->
+                            <g id="heroPlantGroup">
+                                <path d="M150 130 C100 60, 50 60, 30 85 C50 120, 110 135, 150 130 Z" fill="#52B788" stroke="#2D6A4F" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M150 130 C200 50, 250 50, 270 75 C250 110, 190 125, 150 130 Z" fill="#40916C" stroke="#1B4332" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M150 130 C135 50, 120 15, 150 0 C180 15, 165 50, 150 130 Z" fill="#74C69D" stroke="#2D6A4F" stroke-width="3" stroke-linejoin="round"/>
+                                
+                                <!-- Plant Clay Face Expression -->
+                                <circle cx="140" cy="80" r="3" fill="#1B4332"/>
+                                <circle cx="160" cy="80" r="3" fill="#1B4332"/>
+                                <path d="M144 88 Q150 94 156 88" stroke="#1B4332" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                            </g>
+
+                            <!-- Stem -->
+                            <path d="M150 130 L150 175" stroke="#2D6A4F" stroke-width="8" stroke-linecap="round"/>
+
+                            <!-- MAIN CLAY POT BODY -->
+                            <!-- Base Back Shadow Layer for 3D Volume -->
+                            <path d="M70 170 C70 170, 85 275, 150 280 C215 275, 230 170, 230 170 Z" fill="#E8A598" />
+                            <!-- Main Outer Clay Body -->
+                            <path d="M75 168 Q150 182 225 168 L210 270 Q150 282 90 270 Z" fill="#FFCDB2" stroke="#E07A5F" stroke-width="4"/>
+                            <!-- Clay Rim Top -->
+                            <ellipse cx="150" cy="168" rx="75" ry="14" fill="#FFE5D9" stroke="#E07A5F" stroke-width="4"/>
+                            <!-- Soil Surface -->
+                            <ellipse cx="150" cy="168" rx="68" ry="10" fill="#6C584C"/>
+
+                            <!-- THE SIDE SPOUT WATER COMPARTMENT (CLAY SPOUT) -->
+                            <g transform="translate(195, 190)" class="animate-bounce" style="animation-duration: 3s;">
+                                <!-- Side Spout Shadow -->
+                                <path d="M0 0 L32 -5 Q42 20 32 42 Q15 48 0 38 Z" fill="#D8B4A0"/>
+                                <!-- Side Spout Clay Body -->
+                                <path d="M2 0 L34 -4 Q42 22 30 42 Q12 48 2 36 Z" fill="#A2D2FF" stroke="#3A86FF" stroke-width="3"/>
+                                <!-- Water inside Side Spout -->
+                                <path d="M4 14 Q20 18 32 10 Q38 25 28 38 Q12 42 4 32 Z" fill="#38BDF8" opacity="0.8"/>
+                                <!-- Droplet Icon -->
+                                <circle cx="18" cy="24" r="4" fill="#FFFFFF"/>
+                            </g>
+
+                            <!-- Water Flow Pipe Indicator -->
+                            <path d="M195 220 Q170 240 150 250" stroke="#38BDF8" stroke-width="5" stroke-dasharray="4 4" stroke-linecap="round"/>
+                        </svg>
+
+                        <!-- Floating Interactive Badge Callout -->
+                        <div class="absolute -right-2 top-1/2 bg-claybutter text-amber-900 font-display text-xs font-bold px-3 py-2 rounded-2xl shadow-md border-2 border-white flex items-center gap-1.5 animate-pulse">
+                            <i data-lucide="arrow-left" class="w-4 h-4 text-amber-700"></i>
+                            <span>¡Echa agua aquí!</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <p class="text-xs font-extrabold text-claymuted uppercase tracking-wider">
+                            El agua desciende al fondo y la raíz absorbe por capilaridad
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- INTERACTIVE SIMULATOR SECTION -->
+    <section id="simulador" class="max-w-7xl mx-auto px-4 sm:px-8 py-16">
+        <div class="clay-card p-8 sm:p-12">
+            
+            <div class="max-w-2xl mb-10 text-center sm:text-left">
+                <span class="clay-badge bg-clayblue text-sky-900 font-bold mb-3 inline-block">Laboratorio Interactivo</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-claytext">Simula el Riego por el Compartimento Lateral</h2>
+                <p class="text-claymuted font-semibold text-sm sm:text-base mt-2">
+                    Prueba tú mismo cómo funciona la boquilla lateral. Haz clic en el botón de vertido o usa el control deslizante para llenar la reserva de agua.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Controls Column -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Pour Action Button & Reset -->
+                    <div class="space-y-3">
+                        <label class="font-display text-sm font-bold text-claytext block">
+                            Acción de Vertido
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <button id="simPourBtn" onclick="simPourWater()" class="clay-btn clay-btn-primary flex-1 py-4 text-base shadow-md">
+                                <i data-lucide="droplet" class="w-5 h-5 text-sky-200 fill-sky-200"></i>
+                                <span>Vertir Agua Lateral</span>
+                            </button>
+                            <button onclick="simResetWater()" class="clay-btn clay-btn-secondary p-4 text-claymuted hover:text-claytext" title="Reiniciar Depósito">
+                                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Water Reservoir Range Slider -->
+                    <div class="clay-card p-5 bg-claybg space-y-3">
+                        <div class="flex justify-between items-center font-display text-sm font-bold">
+                            <span class="text-claytext">Nivel del Depósito Inferior</span>
+                            <span id="simWaterPctText" class="text-sky-600 bg-white px-2.5 py-1 rounded-full shadow-inner">25%</span>
+                        </div>
+                        <input type="range" id="simWaterSlider" min="5" max="100" value="25" oninput="simUpdateFromSlider(this.value)" class="w-full accent-sky-500 cursor-pointer h-3 clay-input-inset">
+                        <div class="flex justify-between text-[11px] font-bold text-claymuted">
+                            <span>Sedienta</span>
+                            <span>Nivel Óptimo</span>
+                            <span>Reserva Llena (30 días)</span>
+                        </div>
+                    </div>
+
+                    <!-- Plant Mood & Status Card -->
+                    <div class="clay-card clay-card-mint p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-display text-sm font-bold text-emerald-900">Estado de Salud Radicular</span>
+                            <span id="simMoodBadge" class="clay-badge bg-white text-emerald-700 font-extrabold">😃 ¡Feliz y Nutrida!</span>
+                        </div>
+                        <div class="w-full bg-white/60 h-3 rounded-full overflow-hidden p-0.5">
+                            <div id="simHealthBar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 85%;"></div>
+                        </div>
+                        <p id="simStatusNarrative" class="text-xs font-bold text-emerald-800 leading-relaxed">
+                            El agua reposa en la base impermeabilizada. Las raíces absorben solo la humedad exacta por capilaridad.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Interactive Visual Canvas (SVG Cross Section) -->
+                <div class="lg:col-span-7 flex justify-center items-center">
+                    <div class="clay-card bg-sky-50/80 p-8 w-full max-w-md relative flex flex-col items-center">
+                        
+                        <svg id="simCrossSvg" class="w-full h-80 max-w-sm" viewBox="0 0 350 350" fill="none">
+                            
+                            <!-- Soil Cross Section Box -->
+                            <!-- Upper Soil Body -->
+                            <path d="M90 150 L105 250 Q175 260 245 250 L260 150 Z" fill="#8D6E63" stroke="#5D4037" stroke-width="3"/>
+                            
+                            <!-- Lower Water Reservoir Area -->
+                            <rect id="svgWaterBlock" x="106" y="225" width="138" height="25" fill="#38BDF8" opacity="0.8" rx="6" class="transition-all duration-500"/>
+                            
+                            <!-- Capillary Wick Lines -->
+                            <path d="M140 180 L140 240 M175 180 L175 245 M210 180 L210 240" stroke="#FFF" stroke-width="3" stroke-dasharray="3 3" opacity="0.8"/>
+
+                            <!-- OUTER CLAY TRANSPARENT SHELL -->
+                            <path d="M80 140 L98 270 Q175 285 252 270 L270 140 Z" fill="none" stroke="#2B2D42" stroke-width="4" stroke-dasharray="8 4"/>
+
+                            <!-- ROOTS & PLANT -->
+                            <g id="simPlantGraphic">
+                                <!-- Leaves -->
+                                <path id="simLeafLeft" d="M175 110 C130 50, 80 50, 60 75 C80 110, 130 115, 175 110 Z" fill="#52B788" stroke="#1B4332" stroke-width="3"/>
+                                <path id="simLeafRight" d="M175 110 C220 50, 270 50, 290 75 C270 110, 220 115, 175 110 Z" fill="#40916C" stroke="#1B4332" stroke-width="3"/>
+                                <path id="simStem" d="M175 110 L175 160" stroke="#1B4332" stroke-width="6" stroke-linecap="round"/>
+                                
+                                <!-- Plant Face -->
+                                <circle id="simEyeLeft" cx="168" cy="85" r="2.5" fill="#1B4332"/>
+                                <circle id="simEyeRight" cx="182" cy="85" r="2.5" fill="#1B4332"/>
+                                <path id="simMouth" d="M170 92 Q175 97 180 92" stroke="#1B4332" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+                                <!-- Soil Root Threads -->
+                                <path d="M175 160 Q150 185 135 210 M175 160 Q195 190 215 215 M175 160 L175 220" stroke="#D7CCC8" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+
+                            <!-- SIDE WATER SPOUT (CLAY SPOUT ATTACHED ON RIGHT) -->
+                            <g transform="translate(250, 160)">
+                                <!-- Outer Spout Body -->
+                                <path d="M0 0 L38 -5 Q48 25 35 50 Q18 55 0 45 Z" fill="#FFCDB2" stroke="#E07A5F" stroke-width="3"/>
+                                <!-- Inner Water in Spout -->
+                                <path id="simSpoutWaterLevel" d="M4 15 L35 10 Q42 25 35 50 Q18 55 4 45 Z" fill="#38BDF8" opacity="0.6" class="transition-all duration-300"/>
+                                <!-- Pipe Channel into Bottom Reservoir -->
+                                <path d="M0 35 L-20 65" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+                            </g>
+
+                            <!-- Water Animation Stream when pouring -->
+                            <path id="simPourStream" d="M285 110 L280 155" stroke="#0EA5E9" stroke-width="6" stroke-linecap="round" opacity="0" class="transition-opacity duration-300"/>
+                        </svg>
+
+                        <!-- Canvas Badges -->
+                        <div class="mt-2 flex flex-wrap gap-2 justify-center">
+                            <span class="clay-badge bg-white text-claytext text-[11px] font-bold">1. Llenado Lateral Limpio</span>
+                            <span class="clay-badge bg-white text-sky-800 text-[11px] font-bold">2. Cámara Sub-Radicular</span>
+                            <span class="clay-badge bg-white text-emerald-800 text-[11px] font-bold">3. Capilaridad 24/7</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- GAMIFIED LEARNING SECTION -->
+    <section id="juego" class="max-w-7xl mx-auto px-4 sm:px-8 py-16">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="clay-badge bg-claypeach text-amber-900 font-bold mb-3 inline-block">Aprende & Gana Puntos</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-claytext">¿Por qué las plantas aman el Riego Lateral?</h2>
+            <p class="text-claymuted font-semibold text-sm sm:text-base mt-2">
+                Completa los minidesafíos y desbloquea insignias de Jardines Felices.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Card 1 -->
+            <div class="clay-card clay-card-mint p-8 space-y-4 relative group hover:-translate-y-2 transition-transform">
+                <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-inner text-emerald-600 font-display text-xl font-bold">
+                    01
+                </div>
+                <h3 class="font-display text-2xl font-bold text-claytext">Cero Hojas Mojadas</h3>
+                <p class="text-sm text-claymuted font-semibold leading-relaxed">
+                    Al regar desde el costado, evitas las manchas de cal en las hojas y previenes la aparición de hongos por humedad retenida.
+                </p>
+                <button onclick="claimQuestXp(1, 'Insignia: Hoja Limpia')" class="clay-btn clay-btn-secondary px-4 py-2 text-xs">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Comprender (+50 XP)</span>
+                </button>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="clay-card clay-card-peach p-8 space-y-4 relative group hover:-translate-y-2 transition-transform">
+                <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-inner text-amber-600 font-display text-xl font-bold">
+                    02
+                </div>
+                <h3 class="font-display text-2xl font-bold text-claytext">Tierra Aireada</h3>
+                <p class="text-sm text-claymuted font-semibold leading-relaxed">
+                    El agua que cae desde arriba compacta el sustrato y ahoga las raíces. Con Hidro Mazetas la tierra se mantiene suelta y oxigenada.
+                </p>
+                <button onclick="claimQuestXp(2, 'Insignia: Raíz Fuerte')" class="clay-btn clay-btn-secondary px-4 py-2 text-xs">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-amber-600"></i>
+                    <span>Comprender (+50 XP)</span>
+                </button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="clay-card clay-card-blue p-8 space-y-4 relative group hover:-translate-y-2 transition-transform">
+                <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-inner text-sky-600 font-display text-xl font-bold">
+                    03
+                </div>
+                <h3 class="font-display text-2xl font-bold text-claytext">Autonomía de Viaje</h3>
+                <p class="text-sm text-claymuted font-semibold leading-relaxed">
+                    Puedes salir de vacaciones hasta por 30 días. El depósito de arcilla mantiene el equilibrio hídrico exacto mientras no estás.
+                </p>
+                <button onclick="claimQuestXp(3, 'Insignia: Viajero Tranquilo')" class="clay-btn clay-btn-secondary px-4 py-2 text-xs">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-sky-600"></i>
+                    <span>Comprender (+50 XP)</span>
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- CLAY PRODUCT CUSTOMIZER & COLLECTION -->
+    <section id="coleccion" class="max-w-7xl mx-auto px-4 sm:px-8 py-16">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="clay-badge bg-claymint text-emerald-900 font-bold mb-3 inline-block">Personaliza tu Maceta</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-claytext">Crea tu Hidro Mazeta Única</h2>
+            <p class="text-claymuted font-semibold text-sm sm:text-base mt-2">
+                Selecciona el tamaño, el tono de arcilla suave y accesorios opcionales.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white rounded-[36px] p-6 sm:p-10 clay-card">
+            
+            <!-- Product 3D Preview Column -->
+            <div class="lg:col-span-6 clay-card clay-card-mint p-8 flex flex-col items-center justify-center relative min-h-[400px]">
+                
+                <span id="customSizeTag" class="absolute top-6 left-6 clay-badge bg-white text-emerald-800 font-extrabold">
+                    Tamaño: Studio (M)
+                </span>
+
+                <span id="customColorTag" class="absolute top-6 right-6 clay-badge bg-claybutter text-amber-900 font-extrabold">
+                    Arcilla: Melocotón Suave
+                </span>
+
+                <!-- Render SVG Planter with Dynamic Colors -->
+                <div class="relative my-6 transform hover:scale-105 transition-transform duration-500">
+                    <svg class="w-64 h-72 drop-shadow-2xl" viewBox="0 0 260 300" fill="none">
+                        
+                        <!-- Plant Leaves -->
+                        <g id="customPlantFoliage">
+                            <path d="M130 110 C80 50, 40 50, 20 70 C40 100, 90 110, 130 110 Z" fill="#52B788" stroke="#1B4332" stroke-width="3"/>
+                            <path d="M130 110 C180 45, 220 45, 240 65 C220 95, 170 105, 130 110 Z" fill="#40916C" stroke="#1B4332" stroke-width="3"/>
+                            <path d="M130 110 C120 45, 110 10, 130 0 C150 10, 140 45, 130 110 Z" fill="#74C69D" stroke="#1B4332" stroke-width="3"/>
+                        </g>
+
+                        <!-- Stem -->
+                        <path d="M130 110 L130 150" stroke="#1B4332" stroke-width="6" stroke-linecap="round"/>
+
+                        <!-- MAIN POT BODY (Dynamic Color Fill) -->
+                        <path id="customPotBody" d="M60 150 Q130 162 200 150 L188 250 Q130 260 72 250 Z" fill="#FFCDB2" stroke="#E07A5F" stroke-width="4" class="transition-colors duration-500"/>
+                        <ellipse id="customPotRim" cx="130" cy="150" rx="70" ry="12" fill="#FFE5D9" stroke="#E07A5F" stroke-width="4" class="transition-colors duration-500"/>
+                        <ellipse cx="130" cy="150" rx="62" ry="8" fill="#5D4037"/>
+
+                        <!-- SIDE SPOUT (Dynamic Color Fill) -->
+                        <g transform="translate(172, 175)">
+                            <path id="customSideSpout" d="M0 0 L28 -4 Q36 18 26 38 Q10 42 0 34 Z" fill="#A2D2FF" stroke="#3A86FF" stroke-width="3" class="transition-colors duration-500"/>
+                            <circle cx="15" cy="18" r="3" fill="#FFFFFF"/>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="mt-2 text-xs font-bold text-emerald-900 bg-white/80 px-4 py-2 rounded-full flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Incluye Sub-Sustrato Volcánico & Indicador</span>
+                </div>
+
+            </div>
+
+            <!-- Product Controls Column -->
+            <div class="lg:col-span-6 space-y-6">
+                
+                <div>
+                    <h3 id="customProductTitle" class="font-display text-3xl font-bold text-claytext">Hidro Mazeta Studio M</h3>
+                    <p id="customProductPrice" class="font-display text-2xl font-extrabold text-emerald-600 mt-1">$45 USD</p>
+                    <p class="text-sm font-semibold text-claymuted leading-relaxed mt-2">
+                        Maceta de arcilla suave con acabado mate tipo Claymorphism. Ideal para monsteras, pothos y plantas tropicales de interior.
+                    </p>
+                </div>
+
+                <!-- Size Chooser -->
+                <div class="space-y-2">
+                    <label class="font-display text-xs font-bold uppercase tracking-wider text-claytext block">
+                        1. Elige el Tamaño
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setCustomSize('S', 32, 'Petite (Ø 15cm)')" id="sizeBtn-S" class="custom-size-btn clay-btn clay-btn-secondary py-3 text-xs flex-col">
+                            <span>Petite (S)</span>
+                            <span class="text-[10px] text-claymuted">$32 USD</span>
+                        </button>
+                        <button onclick="setCustomSize('M', 45, 'Studio (Ø 25cm)')" id="sizeBtn-M" class="custom-size-btn clay-btn clay-btn-primary py-3 text-xs flex-col">
+                            <span>Studio (M)</span>
+                            <span class="text-[10px] text-white/80">$45 USD</span>
+                        </button>
+                        <button onclick="setCustomSize('L', 68, 'Grand (Ø 35cm)')" id="sizeBtn-L" class="custom-size-btn clay-btn clay-btn-secondary py-3 text-xs flex-col">
+                            <span>Grand (L)</span>
+                            <span class="text-[10px] text-claymuted">$68 USD</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clay Color Chooser -->
+                <div class="space-y-2">
+                    <label class="font-display text-xs font-bold uppercase tracking-wider text-claytext block">
+                        2. Tono de Arcilla Suave
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <button onclick="setCustomColor('#FFCDB2', '#FFE5D9', '#E07A5F', '#A2D2FF', 'Melocotón Soft')" class="w-10 h-10 rounded-full bg-[#FFCDB2] border-4 border-white shadow-md transform hover:scale-110 transition-transform" title="Melocotón Soft"></button>
+                        <button onclick="setCustomColor('#B7E4C7', '#D8F3DC', '#2D6A4F', '#74C69D', 'Verde Menta Matcha')" class="w-10 h-10 rounded-full bg-[#B7E4C7] border-4 border-white shadow-md transform hover:scale-110 transition-transform" title="Menta Matcha"></button>
+                        <button onclick="setCustomColor('#E0F2FE', '#F0F9FF', '#0284C7', '#38BDF8', 'Cielo Pastel')" class="w-10 h-10 rounded-full bg-[#E0F2FE] border-4 border-white shadow-md transform hover:scale-110 transition-transform" title="Cielo Pastel"></button>
+                        <button onclick="setCustomColor('#FDE2E4', '#FFF0F5', '#E63946', '#FFB703', 'Rosa Algodón')" class="w-10 h-10 rounded-full bg-[#FDE2E4] border-4 border-white shadow-md transform hover:scale-110 transition-transform" title="Rosa Algodón"></button>
+                    </div>
+                </div>
+
+                <!-- Add to Cart CTA -->
+                <div class="pt-4 border-t border-slate-100 space-y-3">
+                    <button onclick="addCustomToCart()" class="clay-btn clay-btn-primary w-full py-4 text-base shadow-lg">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>Añadir a la Cesta</span>
+                    </button>
+                    <p class="text-center text-xs font-bold text-claymuted">
+                        🚚 Envío rápido protegido con empaque ecológico anti-caídas
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="max-w-4xl mx-auto px-4 sm:px-8 py-16">
+        
+        <div class="text-center mb-12">
+            <span class="clay-badge bg-claybutter text-amber-900 font-bold mb-3 inline-block">Preguntas Frecuentes</span>
+            <h2 class="font-display text-3xl font-bold text-claytext">Todo lo que necesitas saber</h2>
+        </div>
+
+        <div class="space-y-4">
+            
+            <!-- FAQ 1 -->
+            <div class="clay-card p-6">
+                <button onclick="toggleFaq('faq1')" class="w-full flex justify-between items-center text-left font-display text-lg font-bold text-claytext">
+                    <span>¿Cómo funciona el vertido en el compartimento lateral?</span>
+                    <i id="faq1-icon" data-lucide="chevron-down" class="w-5 h-5 text-emerald-600 transition-transform duration-300"></i>
+                </button>
+                <div id="faq1" class="hidden mt-3 text-sm font-semibold text-claymuted leading-relaxed border-t border-slate-100 pt-3">
+                    Simplemente agregas el agua en la boquilla o taza exterior adjunta. El agua viaja directamente a la reserva sub-radicular sin desbordar ni mojar la superficie.
+                </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="clay-card p-6">
+                <button onclick="toggleFaq('faq2')" class="w-full flex justify-between items-center text-left font-display text-lg font-bold text-claytext">
+                    <span>¿Cuánto tiempo dura el depósito con agua?</span>
+                    <i id="faq2-icon" data-lucide="chevron-down" class="w-5 h-5 text-emerald-600 transition-transform duration-300"></i>
+                </button>
+                <div id="faq2" class="hidden mt-3 text-sm font-semibold text-claymuted leading-relaxed border-t border-slate-100 pt-3">
+                    Dependiendo del clima y del tipo de planta, la reserva de agua mantiene la planta perfectamente hidratada entre 15 y 30 días seguidos.
+                </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="clay-card p-6">
+                <button onclick="toggleFaq('faq3')" class="w-full flex justify-between items-center text-left font-display text-lg font-bold text-claytext">
+                    <span>¿Se pudrirán las raíces por estar cerca del agua?</span>
+                    <i id="faq3-icon" data-lucide="chevron-down" class="w-5 h-5 text-emerald-600 transition-transform duration-300"></i>
+                </button>
+                <div id="faq3" class="hidden mt-3 text-sm font-semibold text-claymuted leading-relaxed border-t border-slate-100 pt-3">
+                    No. Hay una cámara de seguridad de aire y un sustrato volcánico permeable que permite que las raíces solo beban la humedad que necesitan gradualmente.
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- CART DRAWER MODAL -->
+    <div id="cartModal" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div onclick="toggleCartModal()" class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm cursor-pointer"></div>
+        
+        <!-- Drawer Panel -->
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-claybg p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl pointer-events-auto">
+            
+            <div>
+                <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-6 h-6 text-emerald-600"></i>
+                        <span class="font-display text-xl font-bold text-claytext">Tu Cesta Mágica</span>
+                    </div>
+                    <button onclick="toggleCartModal()" class="clay-btn clay-btn-secondary p-2">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Items Container -->
+                <div id="cartItemsList" class="py-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                    <div class="text-center py-12 text-claymuted font-bold text-sm">
+                        Tu cesta está vacía
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div id="cartFooter" class="border-t border-slate-200 pt-4 space-y-3 hidden">
+                <div class="flex justify-between font-display text-sm font-bold">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal" class="text-emerald-600 font-extrabold">$0 USD</span>
+                </div>
+                <button onclick="checkoutSimulated()" class="clay-btn clay-btn-primary w-full py-4 text-base shadow-lg">
+                    ¡Finalizar Pedido! 🚀
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 translate-y-20 opacity-0 transition-all duration-300 clay-card clay-card-mint px-6 py-4 flex items-center gap-3 border-2 border-white shadow-xl">
+        <i data-lucide="sparkles" class="w-5 h-5 text-emerald-600"></i>
+        <span id="toastMsg" class="font-display text-xs font-bold text-emerald-900">Mensaje de notificación</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-slate-200/80 bg-white py-12 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div>
+                <span class="font-display text-2xl font-bold text-claytext">Hidro Mazetas</span>
+                <p class="text-xs font-bold text-claymuted mt-1">El arte del autorriego lateral en arcilla suave 3D</p>
+            </div>
+            <div class="text-xs font-bold text-claymuted">
+                &copy; 2026 HIDRO MAZETAS INC. TODOS LOS DERECHOS RESERVADOS.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Application State
+        let currentSize = 'M';
+        let currentPrice = 45;
+        let currentColorName = 'Melocotón Soft';
+        let currentBodyHex = '#FFCDB2';
+        let currentRimHex = '#FFE5D9';
+        let currentBorderHex = '#E07A5F';
+        let currentSpoutHex = '#A2D2FF';
+
+        let playerXp = 0;
+        let cartItems = [];
+        let userQuestsCompleted = new Set();
+
+        // Simulator Water Level
+        let simWaterVal = 25;
+
+        // -------------------------------------------------------------
+        // SIMULATOR LOGIC
+        // -------------------------------------------------------------
+        function simPourWater() {
+            if (simWaterVal >= 100) {
+                showToast("¡El depósito de agua ya está lleno al máximo!");
+                return;
+            }
+
+            // Animate pour stream
+            const pourStream = document.getElementById('simPourStream');
+            pourStream.style.opacity = '1';
+
+            setTimeout(() => {
+                simWaterVal = Math.min(100, simWaterVal + 35);
+                updateSimulatorUI();
+                
+                setTimeout(() => {
+                    pourStream.style.opacity = '0';
+                }, 600);
+            }, 300);
+
+            // Confetti effect if filled completely
+            if (simWaterVal >= 90) {
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+        }
+
+        function simResetWater() {
+            simWaterVal = 10;
+            updateSimulatorUI();
+            showToast("Depósito de agua vaciado");
+        }
+
+        function simUpdateFromSlider(val) {
+            simWaterVal = parseInt(val);
+            updateSimulatorUI();
+        }
+
+        function updateSimulatorUI() {
+            document.getElementById('simWaterSlider').value = simWaterVal;
+            document.getElementById('simWaterPctText').textContent = simWaterVal + '%';
+
+            // SVG Water Height Adjustment
+            const svgWater = document.getElementById('svgWaterBlock');
+            const heightVal = (simWaterVal / 100) * 35;
+            const yVal = 255 - heightVal;
+            svgWater.setAttribute('y', yVal);
+            svgWater.setAttribute('height', heightVal);
+
+            // Spout inner water opacity
+            document.getElementById('simSpoutWaterLevel').setAttribute('opacity', (simWaterVal / 100) * 0.8);
+
+            // Mood & narrative update
+            const moodBadge = document.getElementById('simMoodBadge');
+            const healthBar = document.getElementById('simHealthBar');
+            const narrative = document.getElementById('simStatusNarrative');
+            const mouth = document.getElementById('simMouth');
+
+            if (simWaterVal < 20) {
+                moodBadge.textContent = "🏜️ Con un poco de sed";
+                moodBadge.className = "clay-badge bg-amber-100 text-amber-800 font-extrabold";
+                healthBar.style.width = "40%";
+                narrative.textContent = "El depósito lateral tiene poca agua. Es buen momento para verter agua por la boquilla.";
+                mouth.setAttribute('d', 'M170 94 L180 94'); // Straight neutral mouth
+            } else if (simWaterVal < 70) {
+                moodBadge.textContent = "😃 ¡Feliz y Nutrida!";
+                moodBadge.className = "clay-badge bg-emerald-100 text-emerald-800 font-extrabold";
+                healthBar.style.width = "85%";
+                narrative.textContent = "El agua reposa en la base impermeabilizada. Las raíces absorben solo la humedad exacta por capilaridad.";
+                mouth.setAttribute('d', 'M170 92 Q175 97 180 92'); // Smile
+            } else {
+                moodBadge.textContent = "🌟 ¡Súper Radiante!";
+                moodBadge.className = "clay-badge bg-sky-100 text-sky-800 font-extrabold";
+                healthBar.style.width = "100%";
+                narrative.textContent = "¡Depósito lleno! Tu planta tiene autonomía hídrica completa para los próximos 30 días.";
+                mouth.setAttribute('d', 'M168 90 Q175 99 182 90'); // Big smile
+            }
+        }
+
+        // -------------------------------------------------------------
+        // GAMIFIED QUEST XP LOGIC
+        // -------------------------------------------------------------
+        function claimQuestXp(questId, badgeTitle) {
+            if (userQuestsCompleted.has(questId)) {
+                showToast("¡Ya habías reclamado esta lección!");
+                return;
+            }
+
+            userQuestsCompleted.add(questId);
+            playerXp += 50;
+
+            const headerXp = document.getElementById('headerXpText');
+            if (playerXp >= 150) {
+                headerXp.textContent = "Nivel 3: Maestro del Autorriego 🌿";
+            } else if (playerXp >= 50) {
+                headerXp.textContent = `Nivel 2: Cuidador Consciente (${playerXp} XP)`;
+            }
+
+            confetti({
+                particleCount: 40,
+                spread: 50,
+                origin: { y: 0.6 }
+            });
+
+            showToast(`¡Ganaste +50 XP y la ${badgeTitle}!`);
+        }
+
+        // -------------------------------------------------------------
+        // PRODUCT CUSTOMIZER LOGIC
+        // -------------------------------------------------------------
+        function setCustomSize(sizeCode, price, label) {
+            currentSize = sizeCode;
+            currentPrice = price;
+
+            document.querySelectorAll('.custom-size-btn').forEach(btn => {
+                btn.classList.remove('clay-btn-primary');
+                btn.classList.add('clay-btn-secondary');
+            });
+
+            const activeBtn = document.getElementById(`sizeBtn-${sizeCode}`);
+            activeBtn.classList.remove('clay-btn-secondary');
+            activeBtn.classList.add('clay-btn-primary');
+
+            document.getElementById('customSizeTag').textContent = `Tamaño: ${sizeCode} (${label})`;
+            document.getElementById('customProductPrice').textContent = `$${price} USD`;
+            document.getElementById('customProductTitle').textContent = `Hidro Mazeta ${sizeCode === 'S' ? 'Petite S' : sizeCode === 'M' ? 'Studio M' : 'Grand L'}`;
+        }
+
+        function setCustomColor(bodyHex, rimHex, borderHex, spoutHex, colorName) {
+            currentBodyHex = bodyHex;
+            currentRimHex = rimHex;
+            currentBorderHex = borderHex;
+            currentSpoutHex = spoutHex;
+            currentColorName = colorName;
+
+            document.getElementById('customPotBody').setAttribute('fill', bodyHex);
+            document.getElementById('customPotBody').setAttribute('stroke', borderHex);
+            document.getElementById('customPotRim').setAttribute('fill', rimHex);
+            document.getElementById('customPotRim').setAttribute('stroke', borderHex);
+            document.getElementById('customSideSpout').setAttribute('fill', spoutHex);
+
+            document.getElementById('customColorTag').textContent = `Arcilla: ${colorName}`;
+        }
+
+        // -------------------------------------------------------------
+        // CART LOGIC
+        // -------------------------------------------------------------
+        function addCustomToCart() {
+            const item = {
+                id: Date.now(),
+                title: `Hidro Mazeta (${currentSize})`,
+                color: currentColorName,
+                price: currentPrice
+            };
+
+            cartItems.push(item);
+            renderCart();
+            showToast(`Añadido: Hidro Mazeta ${currentSize} - ${currentColorName}`);
+            
+            confetti({
+                particleCount: 30,
+                spread: 40,
+                origin: { y: 0.8 }
+            });
+        }
+
+        function removeFromCart(id) {
+            cartItems = cartItems.filter(i => i.id !== id);
+            renderCart();
+        }
+
+        function renderCart() {
+            const countEl = document.getElementById('cartBadgeCount');
+            const listEl = document.getElementById('cartItemsList');
+            const footerEl = document.getElementById('cartFooter');
+            const subtotalEl = document.getElementById('cartSubtotal');
+
+            countEl.textContent = cartItems.length;
+
+            if (cartItems.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-12 text-claymuted font-bold text-sm">Tu cesta está vacía</div>`;
+                footerEl.classList.add('hidden');
+                return;
+            }
+
+            let subtotal = 0;
+            let html = '';
+
+            cartItems.forEach(item => {
+                subtotal += item.price;
+                html += `
+                    <div class="clay-card p-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-display text-sm font-bold text-claytext">${item.title}</h4>
+                            <p class="text-xs font-bold text-claymuted">${item.color}</p>
+                            <span class="font-display text-sm font-extrabold text-emerald-600 mt-1 block">$${item.price} USD</span>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="clay-btn clay-btn-secondary p-2 text-rose-500">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            listEl.innerHTML = html;
+            subtotalEl.textContent = `$${subtotal} USD`;
+            footerEl.classList.remove('hidden');
+
+            lucide.createIcons();
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cartModal');
+            const isHidden = modal.classList.contains('opacity-0');
+
+            if (isHidden) {
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                modal.children[1].classList.remove('translate-x-full');
+            } else {
+                modal.classList.add('opacity-0');
+                modal.children[1].classList.add('translate-x-full');
+                setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+            }
+        }
+
+        function checkoutSimulated() {
+            showToast("¡Pedido realizado con éxito! 🌿");
+            cartItems = [];
+            renderCart();
+            toggleCartModal();
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+        }
+
+        // -------------------------------------------------------------
+        // UTILITIES
+        // -------------------------------------------------------------
+        function toggleFaq(faqId) {
+            const content = document.getElementById(faqId);
+            const icon = document.getElementById(`${faqId}-icon`);
+            const isHidden = content.classList.contains('hidden');
+
+            if (isHidden) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            toastMsg.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Init UI
+        window.addEventListener('DOMContentLoaded', () => {
+            updateSimulatorUI();
+        });
+    </script>
+</body>
+</html>
